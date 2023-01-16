@@ -1,3 +1,3 @@
 # Full Stack Open
 
-Helsinki course
+[Helsinki course](https://fullstackopen.com/en/)
