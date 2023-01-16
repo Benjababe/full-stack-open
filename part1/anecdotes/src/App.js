@@ -32,6 +32,7 @@ const VoteDisplay = ({ anecdotes, points }) => {
         <>
             <h1>Anecdote with most votes</h1>
             <div>{anecdotes[mostVoteIndex]}</div>
+            <div>has {points[mostVoteIndex]} vote{(points[mostVoteIndex] > 1) ? "s" : ""}</div>
         </>
     )
 };
