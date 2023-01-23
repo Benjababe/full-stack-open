@@ -5,6 +5,7 @@ const app = express();
 app.use(express.json());
 morgan.token('body', (req) => JSON.stringify(req.body));
 app.use(morgan(":method :url :status :req[content-length] - :response-time ms :body"));
+app.use(express.static("build"));
 
 const PORT = 3001;
 
