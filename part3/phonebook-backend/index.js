@@ -1,13 +1,13 @@
 const express = require("express");
 const morgan = require("morgan");
+const PORT = process.env.PORT || 3001;
 
 const app = express();
 app.use(express.json());
 morgan.token('body', (req) => JSON.stringify(req.body));
-app.use(morgan(":method :url :status :req[content-length] - :response-time ms :body"));
+app.use(morgan(":method :url :status :res[content-length] - :response-time ms :body"));
 app.use(express.static("build"));
 
-const PORT = 3001;
 
 function getRandomId() {
     const ID_LIMIT = 100000;
@@ -36,10 +36,6 @@ let persons = [
         "number": "39-23-6423122"
     }
 ];
-
-app.get("/", (req, res) => {
-    res.send("<h1>Hello World!</h1>");
-});
 
 app.get("/info", (req, res) => {
     const count = persons.length;
