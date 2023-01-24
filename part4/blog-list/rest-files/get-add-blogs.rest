@@ -1,0 +1,14 @@
+POST http://localhost:3001/api/blogs/ HTTP/1.1
+content-type: application/json
+
+{
+    "title": "Apples and Oranges",
+    "author": "Popular guy",
+    "url": "https://test.com/apples-and-oranges",
+    "likes": "1000"
+}
+
+
+###
+
+GET http://localhost:3001/api/blogs/
