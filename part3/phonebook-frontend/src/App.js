@@ -18,7 +18,7 @@ const App = () => {
     const hookPersons = () => {
         personService
             .getAll()
-            .then(setPersons);
+            .then((persons) => setPersons(persons));
     };
 
     useEffect(hookPersons, []);
@@ -35,6 +35,16 @@ const App = () => {
         setFilter(e.target.value.toLowerCase().trim());
     }
 
+    const showSuccess = (msg) => {
+        setSuccessMsg(msg);
+        setTimeout(() => { setSuccessMsg(null) }, 3000);
+    }
+
+    const showError = (msg) => {
+        setErrorMsg(msg);
+        setTimeout(() => { setErrorMsg(null) }, 3000);
+    }
+
     const updatePersonNumber = (person) => {
         const updatedPerson = { ...person, number: newNumber };
 
@@ -42,13 +52,15 @@ const App = () => {
             .update(person.id, updatedPerson)
             .then((res) => {
                 setPersons(persons.map((p) => (p.id === res.id) ? res : p))
+                showSuccess(`Updated ${updatedPerson.name}`);
+
+                setNewName('');
+                setNewNumber('');
+            })
+            .catch((err) => {
+                const msg = err.response.data;
+                showError(msg.error);
             });
-
-        setNewName('');
-        setNewNumber('');
-
-        setSuccessMsg(`Updated ${updatedPerson.name}`);
-        setTimeout(() => { setSuccessMsg(null) }, 3000);
     };
 
     const uploadNewPerson = () => {
@@ -60,13 +72,17 @@ const App = () => {
 
         personService
             .create(newPerson)
-            .then((res) => { setPersons(persons.concat(res)) });
+            .then((res) => {
+                setPersons(persons.concat(res));
+                showSuccess(`Added ${newPerson.name}`);
 
-        setNewName('');
-        setNewNumber('');
-
-        setSuccessMsg(`Added ${newPerson.name}`);
-        setTimeout(() => { setSuccessMsg(null) }, 3000);
+                setNewName('');
+                setNewNumber('');
+            })
+            .catch((err) => {
+                const msg = err.response.data;
+                showError(msg.error);
+            });
     };
 
     const addNewName = (e) => {
@@ -85,25 +101,20 @@ const App = () => {
     };
 
     const removeName = (id, name) => {
-        const removeFromPersons = () => {
+        const removeFromPersons = (id) => {
             setPersons(persons.filter((p) => p.id !== id));
         };
-
-        const showNotFoundError = () => {
-            setErrorMsg(`Information of ${name} has already been removed from server`);
-            setTimeout(() => setErrorMsg(null), 3000);
-        }
 
         if (window.confirm(`Delete ${name}?`)) {
             personService
                 .remove(id)
                 .then((res) => {
-                    if (res.status === 200)
-                        removeFromPersons();
+                    if (res.status === 204)
+                        removeFromPersons(id);
                 })
                 .catch((err) => {
                     if (err.response.status === 404) {
-                        showNotFoundError();
+                        showError(`Information of ${name} has already been removed from server`)
                     }
                 })
         }
