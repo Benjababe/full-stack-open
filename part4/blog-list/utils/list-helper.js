@@ -1,5 +1,20 @@
 const Blog = require("../model/blog");
 
+const initialBlogs = [
+    {
+        title: "Dances with fire",
+        author: "Not popular guy",
+        url: "https://test.com/dances-with-fire",
+        likes: 0
+    },
+    {
+        title: "Apples and Oranges",
+        author: "Popular guy",
+        url: "https://test.com/apples-and-oranges",
+        likes: 1000
+    }
+];
+
 const dummy = (blogs) => {
     return 1;
 };
@@ -48,10 +63,17 @@ const mostLikes = (blogs) => {
     return maxBlogs;
 };
 
+const blogsInDb = async () => {
+    const blogs = await Blog.find({});
+    return blogs.map(blog => blog.toJSON());
+};
+
 module.exports = {
+    initialBlogs,
     dummy,
     totalLikes,
     favouriteBlog,
     mostBlogs,
     mostLikes,
+    blogsInDb,
 };
