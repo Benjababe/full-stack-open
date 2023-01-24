@@ -1,9 +1,6 @@
-const mongoose = require('mongoose');
-const readline = require('readline').createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+const mongoose = require("mongoose");
 require("dotenv").config();
+const process = require("node:process");
 
 const user = process.env.MONGO_USERNAME;
 const pw = process.env.MONGO_PASSWORD;
@@ -13,7 +10,7 @@ const url =
 // let gName = process.argv[2],
 //     gNum = process.argv[3];
 
-mongoose.set('strictQuery', false);
+mongoose.set("strictQuery", false);
 mongoose.connect(url);
 
 const personSchema = new mongoose.Schema({
@@ -29,7 +26,7 @@ personSchema.set("toJSON", {
     }
 });
 
-const Person = mongoose.model('Person', personSchema);
+const Person = mongoose.model("Person", personSchema);
 
 // const person = new Person({
 //     name: gName,
