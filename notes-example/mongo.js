@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const config = require("./utils/config");
 
 let url = config.MONGO_URI;
-// url = "mongodb+srv://benjababe:htNazyNGEJDbsNG5@fsopen-benjababe.zqgy2ia.mongodb.net/testNoteApp?retryWrites=true&w=majority";
 mongoose.connect(url);
 
 const noteSchema = new mongoose.Schema({
