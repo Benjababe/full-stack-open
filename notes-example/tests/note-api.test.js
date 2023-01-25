@@ -1,13 +1,20 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
+const bcrypt = require("bcrypt");
 const app = require("../app");
 const api = supertest(app);
 const Note = require("../models/note");
+const User = require("../models/user");
 const helper = require("./test-helper");
 
 beforeEach(async () => {
     await Note.deleteMany({});
     await Note.insertMany(helper.initialNotes);
+
+    await User.deleteMany({});
+    const passwordHash = await bcrypt.hash("password", 10);
+    const user = new User({ username: "username", passwordHash });
+    await user.save();
 });
 
 describe("when there is initially some notes saved", () => {
@@ -66,6 +73,16 @@ describe("viewing a specific note", () => {
 
 describe("addition of a new note", () => {
     test("a valid note can be added", async () => {
+        const loginDetails = {
+            username: "username",
+            password: "password"
+        };
+
+        const response = await api
+            .post("/api/login")
+            .send(loginDetails);
+        const token = response.body.token;
+
         const newNote = {
             content: "async/await simplifies making async calls",
             important: true,
@@ -74,6 +91,7 @@ describe("addition of a new note", () => {
         await api
             .post("/api/notes")
             .send(newNote)
+            .set("Authorization", `Bearer ${token}`)
             .expect(201)
             .expect("Content-Type", /application\/json/);
 

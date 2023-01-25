@@ -1,0 +1,12 @@
+GET http://localhost:3001/api/notes
+
+###
+
+POST http://localhost:3001/api/notes 
+Content-Type: application/json
+
+{
+    "userId": "63d00746d0c0411b88819d92",
+    "content": "CSS is very easy!",
+    "important": "false"
+}
