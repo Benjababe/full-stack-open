@@ -1,13 +1,29 @@
-const listHelper = require("../utils/list-helper");
-const Blog = require("../model/blog");
 const mongoose = require("mongoose");
 const supertest = require("supertest");
+const bcrypt = require("bcrypt");
+
+const listHelper = require("../utils/list-helper");
+const Blog = require("../models/blog");
+const User = require("../models/user");
 const app = require("../app");
 const api = supertest(app);
 
+const loginDetails = {
+    username: "hellas",
+    password: "password"
+};
+
 beforeEach(async () => {
+    await User.deleteMany({});
+    const passwordHash = await bcrypt.hash(loginDetails.password, 10);
+    const user = new User({ username: loginDetails.username, passwordHash });
+    await user.save();
+
     await Blog.deleteMany({});
-    await Blog.insertMany(listHelper.initialBlogs);
+    const initialBlogs = listHelper.initialBlogs.map((b) => {
+        return { ...b, user: user._id };
+    });
+    await Blog.insertMany(initialBlogs);
 });
 
 describe("Blog sanity check", () => {
@@ -31,6 +47,11 @@ describe("Blog sanity check", () => {
 
 describe("Adding a blog post", () => {
     test("A valid blog can be added", async () => {
+        const loginResponse = await api
+            .post("/api/login")
+            .send(loginDetails);
+        const token = loginResponse.body.token;
+
         const newBlog = {
             title: "Dances with Water",
             author: "Not popular guy",
@@ -41,6 +62,7 @@ describe("Adding a blog post", () => {
         await api
             .post("/api/blogs")
             .send(newBlog)
+            .set("Authorization", `Bearer ${token}`)
             .expect(201)
             .expect("Content-Type", /application\/json/);
 
@@ -118,8 +140,14 @@ describe("Deleting blog posts", () => {
     test("Deleting blog using invalid id", async () => {
         const invalidId = -1;
 
+        const loginResponse = await api
+            .post("/api/login")
+            .send(loginDetails);
+        const token = loginResponse.body.token;
+
         await api
             .delete(`/api/blogs/${invalidId}`)
+            .set("Authorization", `Bearer ${token}`)
             .expect(400);
     });
 
@@ -127,8 +155,14 @@ describe("Deleting blog posts", () => {
         const blogsAtStart = await listHelper.blogsInDb();
         const blogToDelete = blogsAtStart[0];
 
+        const loginResponse = await api
+            .post("/api/login")
+            .send(loginDetails);
+        const token = loginResponse.body.token;
+
         await api
             .delete(`/api/blogs/${blogToDelete.id}`)
+            .set("Authorization", `Bearer ${token}`)
             .expect(204);
 
         const blogsAtEnd = await listHelper.blogsInDb();
