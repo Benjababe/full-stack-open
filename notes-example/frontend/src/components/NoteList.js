@@ -1,7 +1,11 @@
+import { useState } from "react";
+
 import Note from "./Note";
 import noteService from "../services/notes";
 
-const NoteList = ({ notes, setNotes, showAll, setShowAll, setErrorMessage }) => {
+const NoteList = ({ notes, setNotes, setErrorMessage }) => {
+    const [showAll, setShowAll] = useState(true);
+
     const toggleImportanceOf = (id) => {
         const note = notes.find((n) => n.id === id);
         const changedNote = { ...note, important: !note.important };

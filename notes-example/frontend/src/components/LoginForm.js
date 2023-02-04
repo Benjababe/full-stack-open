@@ -1,7 +1,12 @@
+import { useState } from "react";
+
 import loginService from "../services/login";
 import noteService from "../services/notes";
 
-const LoginForm = ({ setUser, setErrorMessage, username, setUsername, password, setPassword }) => {
+const LoginForm = ({ setUser, setErrorMessage }) => {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+
     const handleLogin = async (event) => {
         event.preventDefault();
 
@@ -24,32 +29,33 @@ const LoginForm = ({ setUser, setErrorMessage, username, setUsername, password, 
         }
     };
 
+    const usernameChange = (e) => setUsername(e.target.value);
+    const passwordChange = (e) => setPassword(e.target.value);
+
     return (
-        <>
+        <div>
             <h2>Login</h2>
+
             <form onSubmit={handleLogin}>
                 <div>
-                    username
+                    Username
                     <input
-                        type="text"
                         value={username}
-                        name="Username"
-                        onChange={({ target }) => setUsername(target.value)}
+                        onChange={usernameChange}
                     />
                 </div>
                 <div>
-                    password
+                    Password
                     <input
                         type="password"
                         value={password}
-                        name="Password"
-                        onChange={({ target }) => setPassword(target.value)}
+                        onChange={passwordChange}
                     />
                 </div>
-                <button type="submit">login</button>
+                <button type="submit">Login</button>
             </form>
-        </>
-    );
+        </div>
+    )
 }
 
 export default LoginForm;
